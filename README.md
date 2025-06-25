@@ -1,62 +1,115 @@
 # PRODIGY_GA_04
 # Pix2Pix GAN — Image-to-Image Translation
 
-This script demonstrates a basic **Pix2Pix GAN** implementation using TensorFlow and PyTorch (for input simulation). It supports both **Google Colab** and **local execution**, and is suitable for sketch-to-image tasks or any paired image translation use-case.
+🔥 DGCAN Pix2Pix GAN Trainer (Facades / Maps / Edges2Shoes)
+
+This project trains a Pix2Pix-style GAN using:
+
+- TensorFlow for U-Net generator & discriminator
+- PyTorch for preprocessing (converts paired image tensors)
+- Real paired datasets like facades, maps, edges2shoes from Efros's official Pix2Pix site
 
 ---
 
-## 📌 Description
-This project loads paired image data (input & target), preprocesses them for training, builds a UNet-based generator and a basic PatchGAN-style discriminator, and performs a sample training step using adversarial + L1 loss.
+📦 Features:
 
-- ✅ Automatic handling of `.zip` uploads (both local and Colab-compatible)
-- ✅ Converts input image to [-1, 1] range (as expected by Pix2Pix models)
-- ✅ Custom UNet-style generator using downsampling and upsampling blocks
-- ✅ Patch-based discriminator using concatenated input & target images
-- ✅ L1 loss + GAN loss training logic
-
----
-
-## 🔧 Required Packages
-Install the following Python packages before running:
-
-```bash
-pip install tensorflow pillow numpy torch
-```
-
-For Google Colab users working with `diffusers`, also run:
-
-```bash
-pip install diffusers transformers accelerate safetensors
-```
+✅ Downloads & extracts the dataset automatically  
+✅ Splits & normalizes paired images (input | target)  
+✅ Resizes to 256x256  
+✅ Trains U-Net Generator + PatchGAN Discriminator  
+✅ Displays generated output every 1000 steps  
+✅ Easy to read, modify, and run
 
 ---
 
-## 📁 How to Use
+🚀 How to Run:
 
-### 🔹 For Google Colab:
-- Automatically triggers a file upload dialog
-- Accepts `.zip` files containing paired training images
-- Prompts for test image for normalization and feeding
+1. Install required libraries:
+   pip install tensorflow torch matplotlib pillow
 
-### 🔹 For Local Execution:
-- Asks for zip path using `input()`
-- Asks for test image path using `input()`
+2. Run the training script:
+   python train.py
 
----
-
-## ✅ Output
-- Prints generator summary
-- Executes one training step
-- Logs Generator and Discriminator loss
+3. When prompted, enter:
+   facades
+   or
+   maps
+   or
+   edges2shoes
 
 ---
 
-## 📂 Notes
-- This implementation is minimal and meant for educational purposes
-- You may expand training to full dataset loop, logging, and validation
-- Generator architecture is UNet-like with skip connections
+📁 Dataset Path:
+
+Automatically downloaded from:
+http://efrosgans.eecs.berkeley.edu/pix2pix/datasets/{dataset_name}.tar.gz
+
+Extracted to:
+~/.keras/datasets/{dataset_name}_extracted/{dataset_name}/train/
+
+Each training image is a side-by-side (input | target) image.
+
+---
+
+🧠 Model Details:
+
+Generator (U-Net):
+- 8 downsampling layers (Conv2D → LeakyReLU)
+- 7 upsampling layers (Conv2DTranspose → ReLU)
+- Skip connections from encoder to decoder
+- Final output with tanh activation
+
+Discriminator (PatchGAN):
+- Input: concatenated input + target
+- Layers: Conv2D → LeakyReLU → Flatten → Dense(1)
+- Outputs a real/fake score
+
+---
+
+📊 Training Config:
+
+- Loss Function:
+  Generator → BinaryCrossentropy + L1 Loss  
+  Discriminator → BinaryCrossentropy  
+- Optimizer: Adam (lr = 2e-4, beta1 = 0.5)
+- Trains for 1000 steps
+- Shows output image every 1000 steps
+
+---
+
+🖼️ Sample Visualization:
+
+Images are denormalized and shown using matplotlib:
+(tensor + 1) / 2.0 → [0, 1] range
+
+---
+
+⚙️ Customization Tips:
+
+- Increase STEPS if needed
+- Wrap it inside EPOCHS if you want full-loop training
+- Add your own dataset (just match the paired .jpg format)
+
+---
+
+🧼 Errors?
+
+❌ No valid images loaded  
+→ Check if extracted path is correct and has train/*.jpg files
+
+❌ Shape mismatch  
+→ Ensure images are resized to 256x256 before stacking
+
+---
+
+💼 Notes:
+
+- Works with both CPU and GPU
+- Great for demonstrating GANs in internships or demo projects
+- Uses minimal dependencies and keeps code readable
 
 ---
 
 ## 🧠 Credit
-This script was built as part of an internship project exploring **Generative Adversarial Networks** using Pix2Pix framework. Useful for academic submissions and personal experiments!
+
+This script was built as part of an internship project exploring **Generative Adversarial Networks** using the Pix2Pix framework. Useful for academic submissions and personal experiments!
