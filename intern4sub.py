@@ -11,19 +11,18 @@ import tensorflow as tf
 import pathlib
 
 dataset_name = input("Enter dataset name (e.g., facades, maps, edges2shoes): ").strip()
-_URL = f"http://efrosgans.eecs.berkeley.edu/pix2pix/datasets/{dataset_name}.tar.gz"
+_URL = f'http://efrosgans.eecs.berkeley.edu/pix2pix/datasets/{dataset_name}.tar.gz'
 
 path_to_zip = tf.keras.utils.get_file(
     fname=f"{dataset_name}.tar.gz",
     origin=_URL,
     extract=True)
 
-# Convert to Pathlib object
-path_to_zip = pathlib.Path(path_to_zip)
+path_to_zip  = pathlib.Path(path_to_zip)
 
-# ✅ Actual extraction folder is:
-# ~/.keras/datasets/{dataset_name}
-PATH = path_to_zip.parent / dataset_name
+extraction_dir = f'{dataset_name}_extracted/{dataset_name}'
+
+PATH = path_to_zip.parent/extraction_dir
 
 print("✅ Dataset extracted to:", PATH)
 
@@ -111,10 +110,10 @@ def build_generator():
         downsample(512, 4),
         downsample(512, 4),
         downsample(512, 4),
-        downsample(512, 4),
+        downsample(1024, 4),
     ]
     up_stack = [
-        upsample(512, 4, apply_dropout=True),
+        upsample(1024, 4, apply_dropout=True),
         upsample(512, 4, apply_dropout=True),
         upsample(512, 4, apply_dropout=True),
         upsample(512, 4),
