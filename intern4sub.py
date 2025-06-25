@@ -7,19 +7,26 @@ import tensorflow as tf
 import torch
 import matplotlib.pyplot as plt
 
-# ====================== Download CMP Facades Dataset ======================
+import tensorflow as tf
+import pathlib
+
 dataset_name = input("Enter dataset name (e.g., facades, maps, edges2shoes): ").strip()
 _URL = f"http://efrosgans.eecs.berkeley.edu/pix2pix/datasets/{dataset_name}.tar.gz"
-
 
 path_to_zip = tf.keras.utils.get_file(
     fname=f"{dataset_name}.tar.gz",
     origin=_URL,
     extract=True)
 
+# Convert to Pathlib object
 path_to_zip = pathlib.Path(path_to_zip)
-extraction_dir = f'{dataset_name}_extracted/{dataset_name}'
-PATH = path_to_zip.parent / extraction_dir
+
+# ✅ Actual extraction folder is:
+# ~/.keras/datasets/{dataset_name}
+PATH = path_to_zip.parent / dataset_name
+
+print("✅ Dataset extracted to:", PATH)
+
 
 # ====================== Load and preprocess images ======================
 IMG_WIDTH = 256
@@ -56,8 +63,12 @@ input_images = []
 target_images = []
 for path in train_paths:
     inp, tgt = load_image_train(path)
-    inp_np = inp.numpy()
-    tgt_np = tgt.numpy()
+    inp_resized = tf.image.resize(inp, [256, 256])
+    tgt_resized = tf.image.resize(tgt, [256, 256])
+
+    inp_np = inp_resized.numpy()
+    tgt_np = tgt_resized.numpy()
+
     input_images.append(torch.tensor(inp_np.transpose(2, 0, 1)))
     target_images.append(torch.tensor(tgt_np.transpose(2, 0, 1)))
 
